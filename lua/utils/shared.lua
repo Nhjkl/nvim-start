@@ -23,7 +23,7 @@ local function getOpts(str)
   return opts
 end
 
-local add_global_keybinds = function(keybinds)
+local function add_global_keybinds(keybinds)
   for _, keybind in pairs(keybinds) do
     if (keybind[4] == nil) then
       keybind[4] = {}
@@ -33,8 +33,35 @@ local add_global_keybinds = function(keybinds)
   end
 end
 
+local VarType = {
+  GLOBAL_VARIABLE = 'g',
+  WINDOW_VARIABLE = 'w',
+  BUFFER_VARIABLE = 'b',
+  TAB_PAGE_VARIABLE = 't',
+  VIM_VARIABLE = 'v',
+}
+
+local function add_variables(variable_type, variables)
+  if type(variables) ~= 'table' then
+    error('variables should be a type of "table"')
+    return
+  end
+
+  local variable_map = vim[variable_type]
+
+  for key, value in pairs(variables) do
+    -- 等同于 vim[variable_type][key] = value
+    -- 例如 vim.g.mapleader = ' '
+    variable_map[key] = value
+  end
+end
+
 function M.keybinds(keybinds)
   add_global_keybinds(keybinds)
+end
+
+function M.addGlobalVariable(variables)
+  add_variables(VarType.GLOBAL_VARIABLE, variables)
 end
 
 return M
