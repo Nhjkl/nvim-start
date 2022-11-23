@@ -50,7 +50,7 @@ local VarType = {
   VIM = 'v',
 }
 
-local function add_variables(variable_type, variables)
+local function addVariables(variable_type, variables)
   if type(variables) ~= 'table' then
     error('variables should be a type of "table"')
     return
@@ -117,7 +117,7 @@ function M.addBufferKeybinds(keybinds)
 end
 
 function M.addGlobalVariable(variables)
-  add_variables(VarType.GLOBAL, variables)
+  addVariables(VarType.GLOBAL, variables)
 end
 
 return M
