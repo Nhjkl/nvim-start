@@ -8,3 +8,4 @@
 -- ░░░   ░░    ░░    ░░ ░░░  ░░  ░░
 require('utils')
 require('general')
+require('packloader')
