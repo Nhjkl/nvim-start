@@ -46,4 +46,7 @@ nvim
 ```
 
 ## 快捷键
-在 `lua/general/keymap.lua`
+
+`lua/general/keymap.lua`
+
+[shortcuts](./docs/keymap.md)
