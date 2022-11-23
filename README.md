@@ -17,29 +17,33 @@
 
 > 由于本人使用的arch linux，所以该配置目前考虑在linux良好运行
 
-## 安装稳定neovim
+[noevim 安装](./docs/neovim_install.md)
+
+## 配置文件安装
+> noevim 的配置文件在 /home/[username]/.config/nvim
+### 提供两种安装方式
+1. 直接将clone配置文件位置
 
 ```bash
-sudo pacman -S neovim
+cd ~/.config/
+
+# 如果`~/.config` 目录已有nvim文件夹,可以先做过备份 `mv nvim nvim.bk`
+
+git clone https://github.com/Nhjkl/nvim-start.git nvim
 ```
-
-## 安装最新版neovim
-
-方式有很多这里介绍一个, 手动下载最新release包 https://github.com/neovim/neovim/releases
-
-找到 nvim-linux64.tar.gz 下载并解压
-
-这里已我的下载路径为例
-
+2. 使用软链接, 已我的安装路径为例:
 ```bash
-cd /usr/local/bin
+cd ~/.local/src/
 
-ln -s ~/.local/src/nvim-linux64/bin/nvim nvim
+git clone https://github.com/Nhjkl/nvim-start.git
 
-nvim --version
+# 如果`~/.config` 目录已有nvim文件夹,可以先做过备份 `mv nvim nvim.bk`
+
+ln -s ~/.local/src/nvim-start ~/.config/nvim
+
+# 执行 nvim 打开neovim 可验证配置效果
+nvim
 ```
-
-> 如果使用这种方式直接安装最新版，缺少依赖可先安装稳定版 `sudo pacman -S neovim` 在进行替换
 
 ## 快捷键
 在 `lua/general/keymap.lua`
