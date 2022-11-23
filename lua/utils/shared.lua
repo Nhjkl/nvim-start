@@ -23,7 +23,7 @@ local function getOpts(str)
   return opts
 end
 
-local function add_global_keybinds(keybinds)
+local function addGlobalKeybinds(keybinds)
   for _, keybind in pairs(keybinds) do
     if (keybind[4] == nil) then
       keybind[4] = {}
@@ -33,12 +33,21 @@ local function add_global_keybinds(keybinds)
   end
 end
 
+local function addBufferKeybinds(keybinds)
+  for _, keybind in pairs(keybinds) do
+    if (keybind[5] == nil) then
+      keybind[5] = {}
+    end
+    vim.api.nvim_buf_set_keymap(keybind[1], keybind[2], keybind[3], keybind[4], keybind[5])
+  end
+end
+
 local VarType = {
-  GLOBAL_VARIABLE = 'g',
-  WINDOW_VARIABLE = 'w',
-  BUFFER_VARIABLE = 'b',
-  TAB_PAGE_VARIABLE = 't',
-  VIM_VARIABLE = 'v',
+  GLOBAL = 'g',
+  WINDOW = 'w',
+  BUFFER = 'b',
+  TAB_PAGE = 't',
+  VIM = 'v',
 }
 
 local function add_variables(variable_type, variables)
@@ -56,12 +65,59 @@ local function add_variables(variable_type, variables)
   end
 end
 
-function M.keybinds(keybinds)
-  add_global_keybinds(keybinds)
+local OptionType = {
+  GLOBAL = 'o',
+  WINDOW = 'wo',
+  BUFFER = 'bo'
+}
+
+local addOptions = function(optionType, id, options)
+  if type(id) == 'table' then
+    options = id
+    id = 0
+  end
+
+  if type(options) ~= 'table' then
+    error('options should be a type of "table"')
+    return
+  end
+
+  for key, value in pairs(options) do
+    -- adding options to vim
+    -- id condition is there to make it compatible with global options
+    -- global options has no id
+    -- vim['o']['mouse'] = 4
+    -- vim['wo'][10]['number'] = true
+    if id == 0 then
+      vim[optionType][key] = value
+    else
+      vim[optionType][id][key] = value
+    end
+  end
+end
+
+function M.addGlobalOptions(options)
+  addOptions(OptionType.GLOBAL, options)
+end
+
+function M.addWindowOptions(id, options)
+  addOptions(OptionType.WINDOW, id, options)
+end
+
+function M.addBufferOptions(id, options)
+  addOptions(OptionType.BUFFER, id, options)
+end
+
+function M.addGlobalKeybinds(keybinds)
+  addGlobalKeybinds(keybinds)
+end
+
+function M.addBufferKeybinds(keybinds)
+  addBufferKeybinds(keybinds)
 end
 
 function M.addGlobalVariable(variables)
-  add_variables(VarType.GLOBAL_VARIABLE, variables)
+  add_variables(VarType.GLOBAL, variables)
 end
 
 return M

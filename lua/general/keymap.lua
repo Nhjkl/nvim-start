@@ -1,5 +1,5 @@
 -- mode ------ key --------------- command --------------------------------- opts
-Utils.Shared.keybinds({
+Utils.Shared.addGlobalKeybinds({
   { 'n'      ,'<leader>e'         ,'<esc>:Ex<cr>'                           ,'ns' },
 -- save & qui, t
   { 'n'      ,'<c-s>'             ,'<esc>:w<cr>'                            ,'ns' },
