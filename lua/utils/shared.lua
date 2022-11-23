@@ -96,6 +96,12 @@ local addOptions = function(optionType, id, options)
   end
 end
 
+function M.cmd(commands)
+  for _, value in ipairs(commands) do
+    vim.cmd(value)
+  end
+end
+
 function M.addGlobalOptions(options)
   addOptions(OptionType.GLOBAL, options)
 end
