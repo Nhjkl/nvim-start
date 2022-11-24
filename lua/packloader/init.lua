@@ -5,6 +5,7 @@
 
 local fn = vim.fn
 local exclude = vim.api.nvim_command
+local hasPackerSync = false
 
 -- packer runtimepath 设置到项目录帮忙阅读学习插件代码
 -- 还有一点好处就是卸载配置的时候所安装的插件一起移除
@@ -24,6 +25,7 @@ if fn.empty(fn.glob(installPath)) > 0 then -- 安装位置为空就下载 packer
   print('git cline ' .. packerGitPath)
   exclude('silent !git clone --depth 1 ' .. packerGitPath .. ' ' .. installPath)
   exclude('packadd packer.nvim')
+  hasPackerSync = true
 end
 
 require('packer').init({
@@ -32,20 +34,13 @@ require('packer').init({
   git = { clone_timeout = 300 }
 })
 
-require('packer').startup(function(use)
-  -- Packer can manage itself
-  use 'wbthomason/packer.nvim'
-  use {
-    'morhetz/gruvbox',  -- https://github.com/morhetz/gruvbox
-    config = function ()
-      Utils.Shared.cmd({
-        'syntax on',
-        'colorscheme gruvbox',
-      })
-    end
-  }
-end)
+-- plugins load
+require('packloader.load')
 
 if fn.empty(fn.glob(compilePath)) > 0 then
-  exclude('PackerSync')
+  if hasPackerSync then
+    exclude('PackerSync')
+  else
+    exclude('PackerCompile')
+  end
 end
