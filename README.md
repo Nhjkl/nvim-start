@@ -1,7 +1,8 @@
 # nvim-start
 
 这是一个用`lua`组织的`noevim`模块化配置非常适合前端开发，我把使用 vim 3年整理的配置重构整理git教程
-根据 git commit 一步步学习，配置文件的搭建过程，包含设置，快捷键，插件模块式管理，启动时间优化, tmux
+根据 git commit 一步步学习 [commits](https://github.com/Nhjkl/nvim-start/commits/main)  ，
+配置文件的搭建过程，包含设置，快捷键，插件模块式管理，启动时间优化, tmux
 结合，和终端下一些命令的结合， 持续更新中...
 
 ## 先来一张成品图
