@@ -50,3 +50,4 @@ nvim
 `lua/general/keymap.lua`
 
 [shortcuts](./docs/keymap.md)
+
