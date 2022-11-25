@@ -34,6 +34,16 @@ require('packer').init({
   git = { clone_timeout = 300 }
 })
 
+_G.removeCompiledFile = function()
+  if fn.empty(fn.glob(compilePath)) == 0 then
+    exclude('silent !rm -f ' .. compilePath)
+  end
+end
+
+Utils.Shared.cmd({
+  [[autocmd BufWritePost **/plugins/*.lua :lua removeCompiledFile()]] -- 写入plugins文件时，删除compile file, 这样重新进入时会重新编译
+})
+
 -- plugins load
 require('packloader.load')
 
