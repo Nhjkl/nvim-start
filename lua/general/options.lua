@@ -15,7 +15,7 @@ Utils.Shared.addGlobalOptions({
   hlsearch       = true,
   linebreak      = true,
   textwidth      = 100,
-  colorcolumn    = '100',
+  -- colorcolumn    = '100',
   backup         = false,
   writebackup    = false,
   swapfile       = false,
