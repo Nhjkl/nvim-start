@@ -1,6 +1,5 @@
 -- mode ------ key --------------- command --------------------------------- opts
 Utils.Shared.addGlobalKeybinds({
-  { 'n'      ,'<leader>e'         ,'<esc>:Ex<cr>'                           ,'ns' },
 -- save & qui, t
   { 'n'      ,'<c-s>'             ,'<esc>:w<cr>'                            ,'ns' },
   { 'v'      ,'<c-s>'             ,'<esc>:w<cr>'                            ,'ns' },
