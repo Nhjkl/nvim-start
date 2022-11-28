@@ -52,3 +52,10 @@ nvim
 
 [shortcuts](./docs/keymap.md)
 
+## 插件安装
+
+>结合 https://github.com/wbthomason/packer.nvim
+
+>查看 [commmit](https://github.com/Nhjkl/nvim-start/commit/b9545f1a58f800c0e42fe592f4e6b343640a27ab)
+
+>添加插件文件后执行 `:PackerInstall` `:PackerCompile`
