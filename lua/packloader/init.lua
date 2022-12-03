@@ -41,7 +41,8 @@ _G.removeCompiledFile = function()
 end
 
 Utils.Shared.cmd({
-  [[autocmd BufWritePost **/plugins/*.lua :lua removeCompiledFile()]] -- 写入plugins文件时，删除compile file, 这样重新进入时会重新编译
+  [[autocmd BufWritePost **/plugins/*.lua :lua removeCompiledFile()]], -- 写入plugins文件时，删除compile file, 这样重新进入时会重新编译
+  [[autocmd BufWritePost **/packloader/plugins_manager.lua :lua removeCompiledFile()]]
 })
 
 -- plugins load
