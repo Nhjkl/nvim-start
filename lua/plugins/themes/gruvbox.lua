@@ -23,6 +23,9 @@ return {
       'hi VertSplit ctermfg=241 ctermbg=235 guifg=#32302f guibg=#32302f',
       'hi link GitSignsCurrentLineBlame GruvboxGray',
       'hi Search guifg=NONE ctermfg=NONE guibg=#593f2a ctermbg=239 gui=NONE cterm=NONE',
+
+      'hi pluginsManagerOptionTrue guibg=#404b3d guifg=#3bae56',
+      'hi pluginsManagerOptionFalse guibg=#53232a guifg=#999999'
     })
   end
 }

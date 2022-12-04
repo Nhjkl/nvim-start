@@ -8,6 +8,6 @@ return {
   -- themes
   ['morhetz/gruvbox'] = true,
   -- windows
-  ['akinsho/bufferline.nvim'] = true,
+  ['akinsho/bufferline.nvim'] = false,
   ['kyazdani42/nvim-tree.lua'] = true,
 }

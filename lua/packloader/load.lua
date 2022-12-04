@@ -77,7 +77,7 @@ local function generatePluginOptionFile()
   return options
 end
 
-local function pluginsManagerKeymapBind()
+local function setPluginsManagerOptions()
   Utils.Shared.cmd({
     [[
       augroup plugins_manager
@@ -87,6 +87,10 @@ local function pluginsManagerKeymapBind()
         autocmd BufEnter **/packloader/plugins_manager.lua nnoremap <silent><buffer><nowait> ,b :lua Utils.Helper.openPluginReadme()<cr>
         autocmd BufEnter **/packloader/plugins_manager.lua nnoremap <silent><buffer><nowait> ,c :lua Utils.Helper.openPluginConfigFile()<cr>
       augroup End
+    ]],
+    [[
+      autocmd BufEnter **/packloader/plugins_manager.lua syntax match pluginsManagerOptionTrue '\v\[.*true.*$'
+      autocmd BufEnter **/packloader/plugins_manager.lua syntax match pluginsManagerOptionFalse '\v\[.*false.*$'
     ]]
   })
 end
@@ -94,7 +98,7 @@ end
 local function loadPlugins(use)
   local tmp = Utils.Shared.getPluginsPaths()
   local options = generatePluginOptionFile()
-  pluginsManagerKeymapBind()
+  setPluginsManagerOptions()
   for _, value in ipairs(tmp) do
     local config = require(value:sub(0, #value - 4))
     if (not (config['disable']) and options[config[1]]) then
