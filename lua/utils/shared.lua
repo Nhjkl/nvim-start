@@ -102,6 +102,39 @@ function M.cmd(commands)
   end
 end
 
+function M.getMatchContent(content, regx)
+  if (not (regx)) then
+    return content
+  end
+  local startIndex, endIndex = string.find(content, regx)
+  if not (startIndex) then
+    return
+  end
+  content = string.sub(content, startIndex + 1, endIndex - 1)
+  return content
+end
+
+-- 约定插件文件位置在lua/plugins
+-- lua/plugins/
+-- └── themes
+--     └── gruvbox.lua
+function M.getPluginsPaths()
+  local fn = vim.fn
+  local pluginConfigsDir = fn.stdpath('config') .. '/lua/plugins'
+  local tmp = vim.split(fn.globpath(pluginConfigsDir, '**/*.lua'), '\n')
+  local paths = {}
+  for _, value in ipairs(tmp) do
+    local fpath = value:sub(#pluginConfigsDir - 6, -1)
+    table.insert(paths, fpath)
+  end
+  return paths
+end
+
+function M.getCurrentLineMatchContent(regx)
+  local curLine = vim.fn.getline('.')
+  return M.getMatchContent(curLine, regx)
+end
+
 function M.addGlobalOptions(options)
   addOptions(OptionType.GLOBAL, options)
 end

@@ -1,29 +1,13 @@
--- 约定插件文件位置在lua/plugins
--- lua/plugins/
--- └── themes
---     └── gruvbox.lua
-local function getPluginsPaths()
-  local fn = vim.fn
-  local pluginConfigsDir = fn.stdpath('config') .. '/lua/plugins'
-  local tmp = vim.split(fn.globpath(pluginConfigsDir, '**/*.lua'), '\n')
-  local paths = {}
-  for _, value in ipairs(tmp) do
-    local fpath = value:sub(#pluginConfigsDir - 6, -1)
-    table.insert(paths, fpath)
-  end
-  return paths
-end
-
 local function split(str, reps)
   local resultStrList = {}
-  string.gsub(str,'[^'..reps..']+',function ( w )
-    table.insert(resultStrList,w)
+  string.gsub(str, '[^' .. reps .. ']+', function(w)
+    table.insert(resultStrList, w)
   end)
   return resultStrList
 end
 
 local function dump(...)
-  local objects = vim.tbl_map(vim.inspect, {...})
+  local objects = vim.tbl_map(vim.inspect, { ... })
   return unpack(objects)
 end
 
@@ -35,18 +19,18 @@ local function writeFile(optionPath, context)
 end
 
 local function generatePluginOptionFile()
-  local tmp = getPluginsPaths()
+  local tmp = Utils.Shared.getPluginsPaths()
   local options = {}
   local optionPath = vim.fn.stdpath('config') .. '/lua/packloader/plugins_manager.lua'
   local isWriteFile = false
   local ok, opt = pcall(require, 'packloader.plugins_manager')
   local optionsStr = '-- 该文件为自动生成，光标移动到插件所在行按下\n'
-        optionsStr = optionsStr .. '-- ,t  控制插件启用或关闭\n'
-        optionsStr = optionsStr .. '-- ,c  打开配置文件\n'
-        optionsStr = optionsStr .. '-- ,b  打开插件源代码readme.md\n'
-        optionsStr = optionsStr .. '-- ,g  通过浏览器打开插件源代码github\n'
+  optionsStr = optionsStr .. '-- ,t  控制插件启用或关闭\n'
+  optionsStr = optionsStr .. '-- ,c  打开配置文件\n'
+  optionsStr = optionsStr .. '-- ,b  打开插件源代码readme.md\n'
+  optionsStr = optionsStr .. '-- ,g  通过浏览器打开插件源代码github\n'
 
-        optionsStr = optionsStr .. '\nreturn {\n'
+  optionsStr = optionsStr .. '\nreturn {\n'
 
   local flg = ''
 
@@ -58,9 +42,9 @@ local function generatePluginOptionFile()
       optionsStr = optionsStr .. type
     end
 
-    local config = require(value:sub(0,#value-4))
+    local config = require(value:sub(0, #value - 4))
     local pluginKey = config[1]
-    options[pluginKey] = not(config['disable'])
+    options[pluginKey] = not (config['disable'])
 
     if ok then
       if opt[pluginKey] == nil then
@@ -86,19 +70,34 @@ local function generatePluginOptionFile()
     end
   end
 
-  if isWriteFile or not(ok) then
+  if isWriteFile or not (ok) then
     writeFile(optionPath, optionsStr)
   end
 
   return options
 end
 
+local function pluginsManagerKeymapBind()
+  Utils.Shared.cmd({
+    [[
+      augroup plugins_manager
+        autocmd!
+        autocmd BufEnter **/packloader/plugins_manager.lua nnoremap <silent><buffer><nowait> ,t :lua Utils.Helper.toggleTrueOrFalse()<cr>
+        autocmd BufEnter **/packloader/plugins_manager.lua nnoremap <silent><buffer><nowait> ,g :lua Utils.Helper.openPluginGithub()<cr>
+        autocmd BufEnter **/packloader/plugins_manager.lua nnoremap <silent><buffer><nowait> ,b :lua Utils.Helper.openPluginReadme()<cr>
+        autocmd BufEnter **/packloader/plugins_manager.lua nnoremap <silent><buffer><nowait> ,c :lua Utils.Helper.openPluginConfigFile()<cr>
+      augroup End
+    ]]
+  })
+end
+
 local function loadPlugins(use)
-  local tmp = getPluginsPaths();
-  local options = generatePluginOptionFile();
+  local tmp = Utils.Shared.getPluginsPaths()
+  local options = generatePluginOptionFile()
+  pluginsManagerKeymapBind()
   for _, value in ipairs(tmp) do
-    local config = require(value:sub(0,#value-4))
-    if (not(config['disable']) and options[config[1]]) then
+    local config = require(value:sub(0, #value - 4))
+    if (not (config['disable']) and options[config[1]]) then
       use(config)
     end
   end
