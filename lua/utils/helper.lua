@@ -1,7 +1,8 @@
 local M = {}
 
-local function getCurrentLinePluginName(call)
-  local pluginName = Utils.Shared.getCurrentLineMatchContent('\'.*\'')
+local function getCurrentLinePluginName(call, regex)
+  regex = regex or '\'.*\''
+  local pluginName = Utils.Shared.getCurrentLineMatchContent(regex)
   if not (pluginName) then
     return
   end
@@ -68,17 +69,13 @@ end
 
 -- [打开插件的readme文件, 如果有]
 function M.openPluginReadme()
-  local pluginName = Utils.Shared.getCurrentLineMatchContent('/.*\'')
-  if not(pluginName) then
-    return
-  end
-  -- getCurrentLinePluginName(function(pluginName) -- 为什么用回调函数的方式 vim.fn.glob 匹配不到
+  getCurrentLinePluginName(function(pluginName)
     local packerRtp = vim.fn.stdpath('config') .. '/.packer'
     local readmePath = vim.fn.glob(packerRtp .. '/**/' .. pluginName .. '/README.md')
     if #readmePath > 0 and vim.fn.empty(readmePath[1]) > 0 then
       M.vsplitFile(readmePath, 'readonly')
     end
-  -- end)
+  end, '/.*\'')
 end
 
 return M
