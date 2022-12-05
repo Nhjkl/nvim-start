@@ -102,11 +102,11 @@ function M.cmd(commands)
   end
 end
 
-function M.getMatchContent(content, regx)
-  if (not (regx)) then
+function M.getMatchContent(content, regex)
+  if (not (regex)) then
     return content
   end
-  local startIndex, endIndex = string.find(content, regx)
+  local startIndex, endIndex = string.find(content, regex)
   if not (startIndex) then
     return
   end
@@ -130,9 +130,9 @@ function M.getPluginsPaths()
   return paths
 end
 
-function M.getCurrentLineMatchContent(regx)
+function M.getCurrentLineMatchContent(regex)
   local curLine = vim.fn.getline('.')
-  return M.getMatchContent(curLine, regx)
+  return M.getMatchContent(curLine, regex)
 end
 
 function M.addGlobalOptions(options)
