@@ -102,6 +102,26 @@ function M.cmd(commands)
   end
 end
 
+function M.dump(...)
+  local objects = vim.tbl_map(vim.inspect, { ... })
+  return unpack(objects)
+end
+
+function M.split(str, reps)
+  local resultStrList = {}
+  string.gsub(str, '[^' .. reps .. ']+', function(w)
+    table.insert(resultStrList, w)
+  end)
+  return resultStrList
+end
+
+function M.writeFile(optionPath, context)
+  local file = io.open(optionPath, 'w')
+  io.output(file)
+  io.write(context)
+  io.close(file)
+end
+
 function M.getMatchContent(content, regex)
   if (not (regex)) then
     return content
@@ -128,6 +148,26 @@ function M.getPluginsPaths()
     table.insert(paths, fpath)
   end
   return paths
+end
+
+function M.loadDependencies(deps, cb)
+  for _,v in ipairs(deps) do
+    local currentPlugin = packer_plugins[v]
+    if currentPlugin == nil then -- 没有组件配置文件
+      print('请在plugins文件夹添加 '..v..' 配置文件或者检查，plugins_manager.lua 插件是否启用')
+    else
+      if vim.fn.empty(vim.fn.glob(currentPlugin.path)) > 0 then -- 插件未安装
+        print('[ '..v..' ] After the plugin installation, please restart vim.')
+        vim.cmd('PackerInstall')
+        return;
+      end
+      if not(currentPlugin.loaded) then
+        vim.cmd('PackerLoad '..v)
+        currentPlugin.loaded = true
+      end
+    end
+  end
+  if cb then cb() end
 end
 
 function M.getCurrentLineMatchContent(regex)

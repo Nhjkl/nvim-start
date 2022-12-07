@@ -6,6 +6,7 @@ return {
   event = 'BufReadPre',
 
   config = function ()
+    Utils.Shared.loadDependencies({ 'nvim-web-devicons' });
     vim.opt.termguicolors = true
 
     require("bufferline").setup({

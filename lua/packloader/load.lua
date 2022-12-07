@@ -1,23 +1,3 @@
-local function split(str, reps)
-  local resultStrList = {}
-  string.gsub(str, '[^' .. reps .. ']+', function(w)
-    table.insert(resultStrList, w)
-  end)
-  return resultStrList
-end
-
-local function dump(...)
-  local objects = vim.tbl_map(vim.inspect, { ... })
-  return unpack(objects)
-end
-
-local function writeFile(optionPath, context)
-  local file = io.open(optionPath, 'w')
-  io.output(file)
-  io.write(context)
-  io.close(file)
-end
-
 local function generatePluginOptionFile()
   local tmp = Utils.Shared.getPluginsPaths()
   local options = {}
@@ -35,7 +15,7 @@ local function generatePluginOptionFile()
   local flg = ''
 
   for _, value in ipairs(tmp) do
-    local type = '  -- ' .. split(value, '/')[2] .. '\n'
+    local type = '  -- ' .. Utils.Shared.split(value, '/')[2] .. '\n'
 
     if flg ~= type then
       flg = type
@@ -56,7 +36,7 @@ local function generatePluginOptionFile()
       end
     end
 
-    optionsStr = optionsStr .. '  [\'' .. pluginKey .. '\'] = ' .. dump(options[pluginKey]) .. ',' .. '\n'
+    optionsStr = optionsStr .. '  [\'' .. pluginKey .. '\'] = ' .. Utils.Shared.dump(options[pluginKey]) .. ',' .. '\n'
   end
 
   optionsStr = optionsStr .. '}'
@@ -71,7 +51,7 @@ local function generatePluginOptionFile()
   end
 
   if isWriteFile or not (ok) then
-    writeFile(optionPath, optionsStr)
+    Utils.Shared.writeFile(optionPath, optionsStr)
   end
 
   return options

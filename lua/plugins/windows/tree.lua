@@ -11,6 +11,7 @@ return {
   end,
 
   config = function()
+    Utils.Shared.loadDependencies({ 'nvim-web-devicons' });
     require('nvim-tree').setup()
   end,
 }

@@ -5,9 +5,11 @@
 -- ,g  通过浏览器打开插件源代码github
 
 return {
+  -- libs
+  ['kyazdani42/nvim-web-devicons'] = true,
   -- themes
   ['morhetz/gruvbox'] = true,
   -- windows
-  ['akinsho/bufferline.nvim'] = false,
+  ['akinsho/bufferline.nvim'] = true,
   ['kyazdani42/nvim-tree.lua'] = true,
 }
