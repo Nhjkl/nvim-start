@@ -21,6 +21,9 @@ vim.o.packpath = vim.o.packpath .. ',' .. packerRtp
 local installPath = packerRtp .. '/pack/packer/start/packer.nvim'
 local compilePath = packerRtp .. '/plugin/packer_compiled.vim'
 
+_G.__installPath__ = installPath
+_G.__compilePath__ = compilePath
+
 if fn.empty(fn.glob(installPath)) > 0 then -- 安装位置为空就下载 packer.nvim
   print('git cline ' .. packerGitPath)
   exclude('silent !git clone --depth 1 ' .. packerGitPath .. ' ' .. installPath)
@@ -40,9 +43,22 @@ _G.removeCompiledFile = function()
   end
 end
 
+function _G.__packaddedHook__()
+  if packer_plugins == nil then
+    return
+  end
+  for _, opts in pairs(packer_plugins) do
+    if vim.fn.empty(vim.fn.glob(opts.path)) > 0 then -- 插件未安装
+      exclude('PackerSync')
+      break
+    end
+  end
+end
+
 Utils.Shared.cmd({
   [[autocmd BufWritePost **/plugins/*.lua :lua removeCompiledFile()]], -- 写入plugins文件时，删除compile file, 这样重新进入时会重新编译
-  [[autocmd BufWritePost **/packloader/plugins_manager.lua :lua removeCompiledFile()]]
+  [[autocmd BufWritePost **/packloader/plugins_manager.lua :lua removeCompiledFile()]],
+  [[autocmd VimEnter * :lua __packaddedHook__()]]
 })
 
 -- plugins load
