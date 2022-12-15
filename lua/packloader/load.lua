@@ -28,6 +28,7 @@ local function generatePluginOptionFile()
   optionsStr = optionsStr .. '\nreturn {\n'
 
   local flg = ''
+  local pluginNames = {}
 
   for _, value in ipairs(pluginPaths) do
     local type = '  -- ' .. Utils.Shared.split(value, '/')[2] .. '\n'
@@ -40,6 +41,8 @@ local function generatePluginOptionFile()
     local config = require(value:sub(0, #value - 4))
 
     local pluginKey = config[1]
+
+    table.insert(pluginNames, Utils.Shared.split(pluginKey, '/')[2])
 
     options[pluginKey] = true --not (config['disable'])
 
@@ -61,6 +64,8 @@ local function generatePluginOptionFile()
   if isWriteFile or not (ok) then
     Utils.Shared.writeFile(optionPaths, optionsStr)
   end
+
+  _G.__pluginNames__ = pluginNames
 
   return options
 end

@@ -44,12 +44,12 @@ _G.removeCompiledFile = function()
 end
 
 function _G.__packaddedHook__()
-  if packer_plugins == nil then
+  if __pluginNames__ == nil then
     return
   end
-  for _, opts in pairs(packer_plugins) do
-    if vim.fn.empty(vim.fn.glob(opts.path)) > 0 then -- 插件未安装
-      exclude('PackerSync')
+  for _, path in ipairs(__pluginNames__) do
+    if vim.fn.empty(vim.fn.glob(packageRoot .. '/**/' .. path)) > 0 then -- 插件未安装
+        exclude('PackerSync')
       break
     end
   end
