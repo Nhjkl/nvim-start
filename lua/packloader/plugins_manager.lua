@@ -5,6 +5,8 @@
 -- ,g  通过浏览器打开插件源代码github
 
 return {
+  -- completion
+  ['windwp/nvim-autopairs'] = true,
   -- libs
   ['kyazdani42/nvim-web-devicons'] = true,
   -- themes
