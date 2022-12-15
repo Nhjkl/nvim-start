@@ -1,20 +1,35 @@
 local function generatePluginOptionFile()
-  local tmp = Utils.Shared.getPluginsPaths()
+  local pluginPaths = Utils.Shared.getPluginsPaths()
+  local dump = Utils.Shared.dump
+
+  --[[
+    options 用于保存组件启
+    {
+      ['windwp/nvim-autopairs'] = true,
+      ['kyazdani42/nvim-web-devicons'] = true,
+      ['morhetz/gruvbox'] = true,
+      ['akinsho/bufferline.nvim'] = true,
+      ['kyazdani42/nvim-tree.lua'] = true,
+    }
+  ]]
   local options = {}
-  local optionPath = vim.fn.stdpath('config') .. '/lua/packloader/plugins_manager.lua'
-  local isWriteFile = false
+
+  local optionPaths = vim.fn.stdpath('config') .. '/lua/packloader/plugins_manager.lua'
+
   local ok, opt = pcall(require, 'packloader.plugins_manager')
+
+  local isWriteFile = false
+
   local optionsStr = '-- 该文件为自动生成，光标移动到插件所在行按下\n'
   optionsStr = optionsStr .. '-- ,t  控制插件启用或关闭\n'
   optionsStr = optionsStr .. '-- ,c  打开配置文件\n'
   optionsStr = optionsStr .. '-- ,b  打开插件源代码readme.md\n'
   optionsStr = optionsStr .. '-- ,g  通过浏览器打开插件源代码github\n'
-
   optionsStr = optionsStr .. '\nreturn {\n'
 
   local flg = ''
 
-  for _, value in ipairs(tmp) do
+  for _, value in ipairs(pluginPaths) do
     local type = '  -- ' .. Utils.Shared.split(value, '/')[2] .. '\n'
 
     if flg ~= type then
@@ -23,35 +38,28 @@ local function generatePluginOptionFile()
     end
 
     local config = require(value:sub(0, #value - 4))
+
     local pluginKey = config[1]
-    options[pluginKey] = not (config['disable'])
+
+    options[pluginKey] = true --not (config['disable'])
 
     if ok then
-      if opt[pluginKey] == nil then
-        isWriteFile = true
-      else
-        if opt[pluginKey] ~= options[pluginKey] then
-          options[pluginKey] = opt[pluginKey]
-        end
+      if opt[pluginKey] ~= options[pluginKey] and opt[pluginKey] ~= nil then
+        options[pluginKey] = opt[pluginKey]
       end
     end
 
-    optionsStr = optionsStr .. '  [\'' .. pluginKey .. '\'] = ' .. Utils.Shared.dump(options[pluginKey]) .. ',' .. '\n'
+    optionsStr = optionsStr .. '  [\'' .. pluginKey .. '\'] = ' .. dump(options[pluginKey]) .. ',' .. '\n'
   end
 
   optionsStr = optionsStr .. '}'
 
-  if ok then
-    for key in pairs(opt) do
-      if options[key] == nil then
-        isWriteFile = true
-        break
-      end
-    end
+  if dump(opt) ~= dump(options) then
+    isWriteFile = true
   end
 
   if isWriteFile or not (ok) then
-    Utils.Shared.writeFile(optionPath, optionsStr)
+    Utils.Shared.writeFile(optionPaths, optionsStr)
   end
 
   return options
