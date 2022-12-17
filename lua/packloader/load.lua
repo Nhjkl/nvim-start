@@ -50,10 +50,9 @@ local function generatePluginOptionFile()
     if (ok) then
       _opt = opt
     end
-
     local optionsStr = generatePluginOptionStr(pluginsPaths, _opt);
-
     Utils.Shared.writeFile(optionPath, optionsStr)
+    Utils.Shared.cmd({ 'silent !rm -f ' .. __compilePath__ })
   end
   return opt
 end
