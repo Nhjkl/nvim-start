@@ -7,6 +7,7 @@
 return {
   -- completion
   ['windwp/nvim-autopairs'] = true,
+  ['hrsh7th/nvim-cmp'] = true,
   -- libs
   ['kyazdani42/nvim-web-devicons'] = true,
   -- themes
