@@ -5,7 +5,6 @@
 
 local fn = vim.fn
 local exclude = vim.api.nvim_command
-local hasPackerSync = false
 
 -- packer runtimepath 设置到项目录帮忙阅读学习插件代码
 -- 还有一点好处就是卸载配置的时候所安装的插件一起移除
@@ -28,7 +27,6 @@ if fn.empty(fn.glob(installPath)) > 0 then -- 安装位置为空就下载 packer
   print('git cline ' .. packerGitPath)
   exclude('silent !git clone --depth 1 ' .. packerGitPath .. ' ' .. installPath)
   exclude('packadd packer.nvim')
-  hasPackerSync = true
 end
 
 require('packer').init({
@@ -44,13 +42,17 @@ _G.removeCompiledFile = function()
 end
 
 function _G.__packaddedHook__()
-  if __pluginNames__ == nil then
+  if fn.empty(fn.glob(compilePath)) > 0 then
+    exclude('PackerCompile')
+  end
+
+  if packer_plugins == nil then
     return
   end
-  for _, path in ipairs(__pluginNames__) do
-    if vim.fn.empty(vim.fn.glob(packageRoot .. '/**/' .. path)) > 0 then -- 插件未安装
-        exclude('PackerSync')
-      break
+
+  for _, opts in pairs(packer_plugins) do
+    if vim.fn.empty(vim.fn.glob(opts.path)) > 0 then -- 插件未安装
+      return exclude('PackerSync')
     end
   end
 end
@@ -58,16 +60,9 @@ end
 Utils.Shared.cmd({
   [[autocmd BufWritePost **/plugins/*.lua :lua removeCompiledFile()]], -- 写入plugins文件时，删除compile file, 这样重新进入时会重新编译
   [[autocmd BufWritePost **/packloader/plugins_manager.lua :lua removeCompiledFile()]],
-  [[autocmd VimEnter * :lua __packaddedHook__()]]
+  [[autocmd VimEnter * :lua __packaddedHook__()]],
+  [[autocmd User PackerCompileDone :lua __packaddedHook__()]]
 })
 
 -- plugins load
 require('packloader.load')
-
-if fn.empty(fn.glob(compilePath)) > 0 then
-  if hasPackerSync then
-    exclude('PackerSync')
-  else
-    exclude('PackerCompile')
-  end
-end

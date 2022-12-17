@@ -1,73 +1,61 @@
-local function generatePluginOptionFile()
-  local pluginPaths = Utils.Shared.getPluginsPaths()
-  local dump = Utils.Shared.dump
-
-  --[[
-    options 用于保存组件启
-    {
-      ['windwp/nvim-autopairs'] = true,
-      ['kyazdani42/nvim-web-devicons'] = true,
-      ['morhetz/gruvbox'] = true,
-      ['akinsho/bufferline.nvim'] = true,
-      ['kyazdani42/nvim-tree.lua'] = true,
-    }
-  ]]
+local function generatePluginOptionStr(pluginsPaths, generatedOpts)
   local options = {}
-
-  local optionPaths = vim.fn.stdpath('config') .. '/lua/packloader/plugins_manager.lua'
-
-  local ok, opt = pcall(require, 'packloader.plugins_manager')
-
-  local isWriteFile = false
-
   local optionsStr = '-- 该文件为自动生成，光标移动到插件所在行按下\n'
-  optionsStr = optionsStr .. '-- ,t  控制插件启用或关闭\n'
-  optionsStr = optionsStr .. '-- ,c  打开配置文件\n'
-  optionsStr = optionsStr .. '-- ,b  打开插件源代码readme.md\n'
-  optionsStr = optionsStr .. '-- ,g  通过浏览器打开插件源代码github\n'
-  optionsStr = optionsStr .. '\nreturn {\n'
+        optionsStr = optionsStr .. '-- ,t  控制插件启用或关闭\n'
+        optionsStr = optionsStr .. '-- ,c  打开配置文件\n'
+        optionsStr = optionsStr .. '-- ,b  打开插件源代码readme.md\n'
+        optionsStr = optionsStr .. '-- ,g  通过浏览器打开插件源代码github\n'
+        optionsStr = optionsStr .. '\nreturn {\n'
+  local commentFlg = ''
 
-  local flg = ''
-  local pluginNames = {}
-
-  for _, value in ipairs(pluginPaths) do
+  for _, value in ipairs(pluginsPaths) do
     local type = '  -- ' .. Utils.Shared.split(value, '/')[2] .. '\n'
-
-    if flg ~= type then
-      flg = type
+    if commentFlg ~= type then
+      commentFlg = type
       optionsStr = optionsStr .. type
     end
-
-    local config = require(value:sub(0, #value - 4))
-
+    local config = require(value:sub(0,#value-4))
     local pluginKey = config[1]
-
-    table.insert(pluginNames, Utils.Shared.split(pluginKey, '/')[2])
-
-    options[pluginKey] = true --not (config['disable'])
-
-    if ok then
-      if opt[pluginKey] ~= options[pluginKey] and opt[pluginKey] ~= nil then
-        options[pluginKey] = opt[pluginKey]
-      end
+    options[pluginKey] = true
+    if generatedOpts[pluginKey] ~= nil then
+      options[pluginKey] = generatedOpts[pluginKey]
+    else
+      generatedOpts[pluginKey] = options[pluginKey]
     end
-
-    optionsStr = optionsStr .. '  [\'' .. pluginKey .. '\'] = ' .. dump(options[pluginKey]) .. ',' .. '\n'
+    optionsStr = optionsStr .. '  [\'' .. pluginKey .. '\'] = ' .. Utils.Shared.dump(options[pluginKey]) .. ',' .. '\n'
   end
 
   optionsStr = optionsStr .. '}'
+  return optionsStr
+end
 
-  if dump(opt) ~= dump(options) then
-    isWriteFile = true
+local function tableLen(list)
+  if list == nil then
+    return 0
   end
-
-  if isWriteFile or not (ok) then
-    Utils.Shared.writeFile(optionPaths, optionsStr)
+  local n = 0;
+  for _, _ in pairs(list) do
+    n = n + 1
   end
+  return n
+end
 
-  _G.__pluginNames__ = pluginNames
+local function generatePluginOptionFile()
+  local pluginsPaths = Utils.Shared.getPluginsPaths()
+  local ok, opt = pcall(require, 'packloader.plugins_manager')
+  if not(ok) or #pluginsPaths ~= tableLen(opt) then
+    local optionPath = vim.fn.stdpath('config') .. '/lua/packloader/plugins_manager.lua'
+    local _opt = {}
 
-  return options
+    if (ok) then
+      _opt = opt
+    end
+
+    local optionsStr = generatePluginOptionStr(pluginsPaths, _opt);
+
+    Utils.Shared.writeFile(optionPath, optionsStr)
+  end
+  return opt
 end
 
 local function setPluginsManagerOptions()
